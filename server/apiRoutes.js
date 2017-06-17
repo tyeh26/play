@@ -6,8 +6,8 @@ apiRouter.get('/rolldice', function (req, res) {
     res.send('ROLLING THE DICE BITCH');
 });
 
-apiRouter.get('/killpeople', function (req, res) {
-    res.send('KILL PEOPLE');
+apiRouter.post('/killpeople', function (req, res) {
+    res.json({userId:'abc', name:"john doe", gameId: "xyz"});
 });
 
 apiRouter.get('/teddyisamazing', function (req, res) {
