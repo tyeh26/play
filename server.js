@@ -1,6 +1,7 @@
 import path from 'path';
 import { Server } from 'http';
 import Express from 'express';
+import bodyParser from 'body-parser';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
@@ -19,12 +20,23 @@ const server = new Server(app);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
+// Parse the body of requests. MUST BE BEEFORE ROUTES.
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+
+/**bodyParser.json(options)
+ * Parses the text as JSON and exposes the resulting object on req.body.
+ */
+app.use(bodyParser.json());
+
 // app.use('/static', express.static('public'))
 // define the folder that will be used for static assets
 app.use('/static', Express.static(path.join(__dirname, 'src/static')));
 
 // API ROUTES
-app.use('/api', apiRouter);
+app.use('/api', apiRouter(app));
+
 
 // universal routing and rendering
 app.get('*', (req, res) => {
