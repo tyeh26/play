@@ -4,22 +4,33 @@ import TextField from 'material-ui/TextField';
 import {browserHistory} from 'react-router';
 
 
-export default class HostView extends React.Component {
-    constructor() {
-        super();
+export default class LobbyView extends React.Component {
+    constructor(props) {
+        super(props);
+        if (!this.props.params.gameId || !localStorage.getItem('userId')) {
+            browserHistory.push("/");
+        }
         this.state = {
-            gameId: "",
-            name: ""
+            gameId: this.props.params.gameId,
+            userId: localStorage.getItem('userId'),
+            name: "",
+            isHost: false,
         }
 
-        this.handleGameIdChange = this.handleGameIdChange.bind(this);
+        {/* Eventually, query Lobby or Game State  */}
+        fetch(`/api/gamestatus?userId=${this.state.userId}`) 
+        .then(response => {
+            return response.json()
+        }).then(j => {
+            this.updateLobbyState(j)
+        });
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-
+        this.updateLobbyState = this.updateLobbyState.bind(this);
     }
 
-    handleGameIdChange(event) {
-        this.setState({gameId: event.target.value});
+    updateLobbyState(lobbyState) {
+        this.setState({isHost: lobbyState.isHost});
     }
 
     handleNameChange(event) {
@@ -32,10 +43,10 @@ export default class HostView extends React.Component {
             method: "POST",
             body: JSON.stringify(this.state) })
         .then(response => {
-            return response.json()
+                return response.json()
         }).then(j => {
             localStorage.setItem('userId', j.userId);
-            browserHistory.push(`/lobby/${j.gameId}`);
+            browserHistory.push("/");
         })
 
     }
@@ -46,7 +57,8 @@ export default class HostView extends React.Component {
                 <form onSubmit={this.handleSubmit}>
                     <div><TextField hintText="A Game Id" value={this.state.gameId} onChange={this.handleGameIdChange} fullWidth={true} /></div>
                     <div><TextField hintText="A Name" value={this.state.name} onChange={this.handleNameChange} fullWidth={true} /></div>
-                    <div><RaisedButton type="submit" primary={true} label="host" fullWidth={true} /></div>
+
+                    { this.state.isHost ? <div><RaisedButton type="submit" primary={true} label="start" fullWidth={true} /></div> : null }
                 </form>
             </div>
         );

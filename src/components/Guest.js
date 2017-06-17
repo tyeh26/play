@@ -6,13 +6,14 @@ import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import Dice from './Dice';
+import {browserHistory} from 'react-router';
 
 export default class GuestView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             gameId: "",
-            name: "",
+            name: localStorage.getItem('userId') || "",
             faces: [1, 2, 3, 5, 5],
             isRolling: false,
         };
@@ -32,9 +33,21 @@ export default class GuestView extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        console.log("join the game!");
-        console.log(this.state);
-        this.setState({isRolling: true});
+        const payload = {
+            gameId: this.state.gameId,
+            userId: localStorage.getItem('userId'),
+            name: this.state.name
+        }
+
+        fetch("/api/killpeople", {
+            method: "POST",
+            body: JSON.stringify(payload) })
+        .then(response => {
+            return response.json()
+        }).then(j => {
+            localStorage.setItem('userId', j.userId);
+            browserHistory.push(`/lobby/${j.gameId}`);
+        })
     }
 
     render() {
