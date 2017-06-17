@@ -7,12 +7,12 @@ import GuestView from './components/Guest';
 import NotFoundPage from './components/NotFoundPage';
 
 const routes = (
-  <Route path="/" component={Layout}>
-    <IndexRoute component={IndexPage} />
-    <Route path="host" component={HostView} />
-    <Route path="guest" component={GuestView} />
-    <Route path="*" component={NotFoundPage} /> // * Maps to all other pages
-  </Route>
+    <Route path="/" component={Layout}>
+        <IndexRoute component={IndexPage} />
+        <Route path="host" component={HostView} />
+        <Route path="guest" component={GuestView} />
+        <Route path="*" component={NotFoundPage} /> // * Maps to all other pages
+    </Route>
 );
 
 export default routes;
