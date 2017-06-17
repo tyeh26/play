@@ -4,17 +4,21 @@ import Express from 'express';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
-import routes from './routes';
-import NotFoundPage from './components/NotFoundPage';
+import routes from './src/routes';
+import NotFoundPage from './src/components/NotFoundPage';
+import apiRouter from './server/apiRoutes';
 
 // initialize the server and configure support for ejs templates
 const app = new Express();
 const server = new Server(app);
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'src/views'));
 
 // define the folder that will be used for static assets
 app.use(Express.static(path.join(__dirname, 'static')));
+
+// API ROUTES
+app.use('/api', apiRouter);
 
 // universal routing and rendering
 app.get('*', (req, res) => {
