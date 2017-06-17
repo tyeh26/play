@@ -7,23 +7,37 @@ import {browserHistory} from 'react-router';
 export default class LobbyView extends React.Component {
     constructor(props) {
         super(props);
-        if (!this.props.params.gameId || !localStorage.getItem('userId')) {
-            browserHistory.push("/");
-        }
+        let isNode = typeof module !== 'undefined';
+        let gameId = this.props.params.gameId;
+
         this.state = {
-            gameId: this.props.params.gameId,
-            userId: localStorage.getItem('userId'),
+            gameId: gameId,
+            userId: "",
             name: "",
             isHost: false,
         }
+    }
 
-        {/* Eventually, query Lobby or Game State  */}
-        fetch(`/api/gamestatus?userId=${this.state.userId}`) 
-        .then(response => {
-            return response.json()
-        }).then(j => {
-            this.updateLobbyState(j)
-        });
+    componentDidMount() {
+        let userId = localStorage.getItem('userId') || "";
+
+        if (!this.props.params.gameId || userId) {
+            browserHistory.push("/");
+        }
+
+        if(userId) {
+            this.setState({
+                userId: user_id,
+            });
+
+            {/* Eventually, query Lobby or Game State  */}
+            fetch(`/api/gamestatus?userId=${this.state.userId}`)
+            .then(response => {
+                return response.json()
+            }).then(j => {
+                this.updateLobbyState(j)
+            });
+        }
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.updateLobbyState = this.updateLobbyState.bind(this);

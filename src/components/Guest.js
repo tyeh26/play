@@ -11,9 +11,16 @@ import {browserHistory} from 'react-router';
 export default class GuestView extends React.Component {
     constructor(props) {
         super(props);
+        let user_id = "";
+        let isNode = typeof module !== 'undefined';
+
+        if (!isNode) {
+            user_id = localStorage.getItem('userId') || "";
+        }
+
         this.state = {
             gameId: "",
-            name: localStorage.getItem('userId') || "",
+            name: user_id,
             faces: [1, 2, 3, 5, 5],
             isRolling: false,
         };
