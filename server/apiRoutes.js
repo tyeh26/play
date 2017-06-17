@@ -7,7 +7,12 @@ apiRouter.get('/rolldice', function (req, res) {
 });
 
 apiRouter.get('/gamestatus', function (req, res) {
-    res.json({userId:'aaa', name:"jjjj", gameId: "xyz", isHost: true});
+    res.json({players: {
+        aaa: {name: 'Awesome Amira', isHost: false},
+        abc: {name: 'Teddy', isHost: true},
+        zzz: {name: 'John Doe', isHost: false},
+        xyz: {name: 'LittleBobbyTables', isHost: false},
+    }});
 });
 
 apiRouter.post('/killpeople', function (req, res) {
@@ -16,6 +21,10 @@ apiRouter.post('/killpeople', function (req, res) {
 
 apiRouter.get('/teddyisamazing', function (req, res) {
     res.send('hi teddy. I adore you');
+});
+
+apiRouter.post('/startGame', function (req, res) {
+    res.redirect('/gamestatus'); // SET STARTED TO TRUE AND REDIRECT TO GAMESTATUS
 });
 
 module.exports = apiRouter;

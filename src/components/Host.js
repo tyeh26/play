@@ -30,6 +30,7 @@ export default class HostView extends React.Component {
         event.preventDefault();
         fetch("/api/killpeople", {
             method: "POST",
+            redirect: "follow",
             body: JSON.stringify(this.state) })
         .then(response => {
             return response.json()

@@ -15,13 +15,15 @@ export default class LobbyView extends React.Component {
             userId: "",
             name: "",
             isHost: false,
+            players: [],
+            refreshLobbyInterval: null,
         }
     }
 
     componentDidMount() {
         let userId = localStorage.getItem('userId');
 
-        if (!this.props.params.gameId || userId) {
+        if (!this.props.params.gameId || !userId) {
             browserHistory.push("/");
         }
 
@@ -30,21 +32,28 @@ export default class LobbyView extends React.Component {
             userId: userId,
         });
 
-        {/* Eventually, query Lobby or Game State  */}
+        this.handleNameChange = this.handleNameChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.updateLobbyState = this.updateLobbyState.bind(this);
+        this.updateLobbyState();
+        let refreshLobbyInterval = setInterval(this.updateLobbyState, 500);
+        this.setState({refreshLobbyInterval:refreshLobbyInterval});
+    }
+
+    componentWillUnmount() {
+        this.state.refreshLobbyInterval && clearInterval(this.state.refreshLobbyInterval);
+        this.setState({refreshLobbyInterval: null});
+    }
+
+    updateLobbyState() {
         fetch(`/api/gamestatus?userId=${this.state.userId}`)
         .then(response => {
             return response.json()
         }).then(j => {
-            this.updateLobbyState(j)
+            this.setState({players: j.players});
+            let me = j.players[this.state.userId];
+            this.setState({isHost: me.isHost});
         });
-
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.updateLobbyState = this.updateLobbyState.bind(this);
-    }
-
-    updateLobbyState(lobbyState) {
-        this.setState({isHost: lobbyState.isHost});
     }
 
     handleNameChange(event) {
@@ -53,14 +62,16 @@ export default class LobbyView extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        fetch("/api/killpeople", {
+
+        const payload = { gameId: this.state.gameId, userId: this.state.userId }
+
+        fetch("/api/killPeople", {
             method: "POST",
-            body: JSON.stringify(this.state) })
-        .then(response => {
-                return response.json()
+            body: JSON.stringify(payload)
+        }).then(response => {
+            return response.json()
         }).then(j => {
-            localStorage.setItem('userId', j.userId);
-            browserHistory.push("/");
+            browserHistory.push(`/play/liarsdice/${j.gameId}`);
         })
 
     }
@@ -69,9 +80,10 @@ export default class LobbyView extends React.Component {
         return (
             <div className="host-view">
                 <List>
-                    <ListItem primaryText="John" secondaryText="Host" />
-                    <ListItem primaryText="foobar" />
-                    <ListItem primaryText="Little Bobby Tables" />
+                    {Object.keys(this.state.players).map( (userId) =>
+                        <ListItem key={userId} primaryText={this.state.players[userId].name}
+                        secondaryText={this.state.players[userId].isHost ? "Host" : "" } />
+                    )}
                 </List>
                 <form onSubmit={this.handleSubmit}>
                     { this.state.isHost ? <div><RaisedButton type="submit" primary={true} label="start" fullWidth={true} /></div> : null }
