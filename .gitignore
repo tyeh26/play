@@ -60,8 +60,7 @@ typings/
 
 # babel stuff
 babel_cache/
-src/static/js/bundle.js
+/src/static/js/bundle.js
 
 # package-lock
 package-lock.json
-

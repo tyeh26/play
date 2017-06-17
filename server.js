@@ -7,6 +7,11 @@ import { match, RouterContext } from 'react-router';
 import routes from './src/routes';
 import NotFoundPage from './src/components/NotFoundPage';
 import apiRouter from './server/apiRoutes';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
+
 
 // initialize the server and configure support for ejs templates
 const app = new Express();
@@ -14,8 +19,9 @@ const server = new Server(app);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
+// app.use('/static', express.static('public'))
 // define the folder that will be used for static assets
-app.use(Express.static(path.join(__dirname, 'static')));
+app.use('/static', Express.static(path.join(__dirname, 'src/static')));
 
 // API ROUTES
 app.use('/api', apiRouter);
@@ -39,8 +45,9 @@ app.get('*', (req, res) => {
             // generate the React markup for the current route
             let markup;
             if (renderProps) {
+                const muiTheme = getMuiTheme({userAgent: req.headers['user-agent']});  
                 // if the current route matched we have renderProps
-                markup = renderToString(<RouterContext {...renderProps}/>);
+                markup = renderToString(<MuiThemeProvider muiTheme={muiTheme}><RouterContext {...renderProps}/></MuiThemeProvider>);
             } else {
             // otherwise we can render a 404 page
                 markup = renderToString(<NotFoundPage/>);
