@@ -44,10 +44,12 @@ export default class GuestView extends React.Component {
             gameId: this.state.gameId,
             userId: localStorage.getItem('userId'),
             name: this.state.name
-        }
+        };
+        const headers = new Headers({'Content-Type': 'application/json'});
 
-        fetch("/api/killpeople", {
+        fetch("/api/joinGame", {
             method: "POST",
+            headers: headers,
             body: JSON.stringify(payload) })
         .then(response => {
             return response.json()

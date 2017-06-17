@@ -28,10 +28,14 @@ export default class HostView extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        fetch("/api/killpeople", {
+        const headers = new Headers({'Content-Type': 'application/json'});
+
+        fetch("/api/hostGame", {
             method: "POST",
             redirect: "follow",
-            body: JSON.stringify(this.state) })
+            headers: headers,
+            body: JSON.stringify(this.state)
+        })
         .then(response => {
             return response.json()
         }).then(j => {

@@ -1,30 +1,85 @@
 import Express from 'express';
 
-const apiRouter = Express.Router();
+module.exports = function(app) {
 
-apiRouter.get('/rolldice', function (req, res) {
-    res.send('ROLLING THE DICE BITCH');
-});
+    const apiRouter = Express.Router();
+    let currentlyRunningGames = app.locals.currentlyRunningGames || {};
 
-apiRouter.get('/gamestatus', function (req, res) {
-    res.json({players: {
-        aaa: {name: 'Awesome Amira', isHost: false},
-        abc: {name: 'Teddy', isHost: true},
-        zzz: {name: 'John Doe', isHost: false},
-        xyz: {name: 'LittleBobbyTables', isHost: false},
-    }});
-});
+	apiRouter.get('/gamestatus', function (req, res) {
+	    res.json({players: {
+	        aaa: {name: 'Awesome Amira', isHost: false},
+	        abc: {name: 'Teddy', isHost: true},
+	        zzz: {name: 'John Doe', isHost: false},
+	        xyz: {name: 'LittleBobbyTables', isHost: false},
+	    }});
+	});
 
-apiRouter.post('/killpeople', function (req, res) {
-    res.json({userId:'abc', name:"john doe", gameId: "xyz"});
-});
+    apiRouter.get('/rolldice', function (req, res) {
+    	res.send('ROLLING THE DICE BITCH');
+	});
+	
+	apiRouter.post('/startGame', function (req, res) {
+	    res.redirect('/gamestatus'); // SET STARTED TO TRUE AND REDIRECT TO GAMESTATUS
+	});
 
-apiRouter.get('/teddyisamazing', function (req, res) {
-    res.send('hi teddy. I adore you');
-});
+	/*
+	 * This endpoint takes in a gameId, a userId, and a name for the user.
+	 * Returns:
+	 *   null for gameId if the game is not currently running
+	 *   id for gameId if the game is currently existent
+	 *   Passed in userId and name. Which is kinda redundant. But whatever.
+	 */
+	apiRouter.post('/hostGame', function(req, res) {
+		let {gameId, userId, name} = req.body;
 
-apiRouter.post('/startGame', function (req, res) {
-    res.redirect('/gamestatus'); // SET STARTED TO TRUE AND REDIRECT TO GAMESTATUS
-});
+		// Make sure this game is not already currently being hosted
+		if (currentlyRunningGames[gameId]) {
+			res.json({
+				gameId: gameId,
+				userId: userId,
+				name: name
+			});
+		} else {
+			res.send(500, {status:500, message: 'Game Already Exists'});
+		}
+	});
 
-module.exports = apiRouter;
+	/*
+	 * This endpoint takes in a gameId, a userId, and a name for the user.
+	 * Returns:
+	 *   null for gameId if the game is not currently running
+	 *   id for gameId if the game is currently existent
+	 *   Passed in userId and name. Which is kinda redundant. But whatever.
+	 */
+	apiRouter.post('/joinGame', function(req, res) {
+		let {gameId, userId, name} = req.body;
+
+		// Check that the game is currently running
+		if (currentlyRunningGames[gameId]) {
+			let gameId = gameId;
+		} else {
+			gameId = gameId;
+		}
+
+		res.json({
+			gameId: gameId,
+			userId: userId,
+			name: name
+		});
+	});
+
+	/*
+	 * End a game so that gameId can be used in the future.
+	 */
+	apiRouter.post('/endGame', function(req, res) {
+		let {gameId} = req.body;
+
+		// Check that the game is currently running
+		if (currentlyRunningGames[gameId]) {
+			del currentlyRunningGames[gameId];
+		}
+		res.send(200);
+	});
+
+    return apiRouter;
+};
