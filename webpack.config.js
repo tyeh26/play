@@ -34,11 +34,12 @@ module.exports = {
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.OccurenceOrderPlugin(),
       new webpack.optimize.UglifyJsPlugin({
-        compress: { warnings: false },
-        mangle: true,
-        sourcemap: false,
-        beautify: false,
-        dead_code: true
+        compress: false,
+        mangle: false,
+        sourcemap: true,
+        beautify: true,
+        dead_code: true,
+        comments: true
       })
     ]
 };
