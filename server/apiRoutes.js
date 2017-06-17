@@ -3,7 +3,6 @@ import Express from 'express';
 module.exports = function(app) {
 
     const apiRouter = Express.Router();
-    let currentlyRunningGames = app.locals.currentlyRunningGames || {};
 
 	apiRouter.get('/gamestatus', function (req, res) {
 	    res.json({players: {
@@ -31,9 +30,12 @@ module.exports = function(app) {
 	 */
 	apiRouter.post('/hostGame', function(req, res) {
 		let {gameId, userId, name} = req.body;
+		req.app.locals.currentlyRunningGames = app.locals.currentlyRunningGames || {};
 
 		// Make sure this game is not already currently being hosted
-		if (currentlyRunningGames[gameId]) {
+		if (!req.app.locals.currentlyRunningGames[gameId]) {
+			// Put in the gameId into our persistent dictionary
+			req.app.locals.currentlyRunningGames[gameId] = true;
 			res.json({
 				gameId: gameId,
 				userId: userId,
@@ -53,19 +55,19 @@ module.exports = function(app) {
 	 */
 	apiRouter.post('/joinGame', function(req, res) {
 		let {gameId, userId, name} = req.body;
+		req.app.locals.currentlyRunningGames = app.locals.currentlyRunningGames || {};
 
 		// Check that the game is currently running
-		if (currentlyRunningGames[gameId]) {
+		if (req.app.locals.currentlyRunningGames[gameId]) {
 			let gameId = gameId;
+			res.json({
+				gameId: gameId,
+				userId: userId,
+				name: name
+			});			
 		} else {
-			gameId = gameId;
+			res.send(500, {status:500, message: 'Game Does Not Exist'});
 		}
-
-		res.json({
-			gameId: gameId,
-			userId: userId,
-			name: name
-		});
 	});
 
 	/*
@@ -75,8 +77,8 @@ module.exports = function(app) {
 		let {gameId} = req.body;
 
 		// Check that the game is currently running
-		if (currentlyRunningGames[gameId]) {
-			del currentlyRunningGames[gameId];
+		if (req.app.locals.currentlyRunningGames[gameId]) {
+			delete req.app.locals.currentlyRunningGames[gameId];
 		}
 		res.send(200);
 	});
