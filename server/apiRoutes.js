@@ -10,4 +10,8 @@ apiRouter.get('/killpeople', function (req, res) {
     res.send('KILL PEOPLE');
 });
 
+apiRouter.get('/teddyisamazing', function (req, res) {
+    res.send('hi teddy. I adore you');
+});
+
 module.exports = apiRouter;
