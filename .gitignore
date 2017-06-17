@@ -58,3 +58,10 @@ typings/
 .env
 /env
 
+# babel stuff
+babel_cache/
+src/static/js/bundle.js
+
+# package-lock
+package-lock.json
+
