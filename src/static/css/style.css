@@ -1,4 +1,13 @@
-.dice_image {
+.dice-image {
     width: 64px;
     height: 64px;
+    padding: 5px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+#footer {
+    text-align: center
 }

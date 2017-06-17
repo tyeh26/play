@@ -13,6 +13,8 @@ export default class IndexPage extends React.Component {
         this.state = {
             gameId: "",
             name: "",
+            faces: [1, 2, 3, 5, 5],
+            isRolling: false,
         };
 
         this.handleGameIdChange = this.handleGameIdChange.bind(this);
@@ -29,19 +31,24 @@ export default class IndexPage extends React.Component {
     }
 
     handleSubmit(event) {
+        event.preventDefault();
         console.log("join the game!");
         console.log(this.state);
-        event.preventDefault();
+        this.setState({isRolling: true});
     }
 
     render() {
         return (
             <div className="home">
-                <div><Dice face="3" /></div>
+                <div>
+                    <Dice face={this.state.faces[0]} isRolling={this.state.isRolling} />
+                    <Dice face={this.state.faces[1]} isRolling={this.state.isRolling} />
+                    <Dice face={this.state.faces[2]} isRolling={this.state.isRolling} />
+                </div>
                 <form onSubmit={this.handleSubmit}>
-                    <div><TextField id="gameId-field" hintText="Game Id" value={this.state.gameId} onChange={this.handleGameIdChange} /></div>
-                    <div><TextField id="name-field" hintText="A Name" value={this.state.name} onChange={this.handleNameChange} /></div>
-                    <div><RaisedButton type="submit" label="join" /></div>
+                    <div><TextField hintText="Game Id" value={this.state.gameId} onChange={this.handleGameIdChange} fullWidth={true} /></div>
+                    <div><TextField hintText="A Name" value={this.state.name} onChange={this.handleNameChange} fullWidth={true} /></div>
+                    <div><RaisedButton type="submit" primary={true} label="join" fullWidth={true} /></div>
                 </form>
             </div>
         );

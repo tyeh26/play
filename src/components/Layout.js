@@ -9,12 +9,11 @@ export default class Layout extends React.Component {
         return (
             <div className="app-container">
                 <header>
-                    This is a universal header.
                 </header>
                 <div className="app-content">{this.props.children}</div>
                 <footer>
-                    <p>
-                        This is a universal footer.
+                    <p id="footer">
+                        ATP (c) 2017
                     </p>
                 </footer>
             </div>
