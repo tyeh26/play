@@ -1,18 +1,15 @@
 import Express from 'express';
+
+// Controllers
 import userController from './controllers/user_controller';
+import gameStatusController from './controllers/gamestatus_controller';
+
+// Models
 import gameStatus from './models/gamestatus.js';
 
 module.exports = function(app) {
 
     const apiRouter = Express.Router();
-
-	apiRouter.get('/gamestatus', function (req, res) {
-        res.json(gameStatus);
-    });
-	
-	apiRouter.post('/startGame', function (req, res) {
-	    res.redirect('/gamestatus'); // SET STARTED TO TRUE AND REDIRECT TO GAMESTATUS
-	});
 
 	/*
 	 * This endpoint takes in a gameId, a userId, and a name for the user.
@@ -25,8 +22,6 @@ module.exports = function(app) {
 		let {gameId, userId, name} = req.body;
 		req.app.locals.currentlyRunningGames = app.locals.currentlyRunningGames || {};
 
-		// TO DO MAKE SURE I LOG WHO THE HOST IS IN THE GAME STATUS
-
 		if (!userId) {
 			userId = userController.createUser(req.requestId);
 		}
@@ -35,6 +30,10 @@ module.exports = function(app) {
 		if (!req.app.locals.currentlyRunningGames[gameId]) {
 			// Put in the gameId into our persistent dictionary
 			req.app.locals.currentlyRunningGames[gameId] = true;
+
+			// Generate the gamestatus object here
+			gameStatusController.create(req, userId, gameId, name);
+
 			res.json({
 				gameId: gameId,
 				userId: userId,
@@ -84,6 +83,19 @@ module.exports = function(app) {
 			delete req.app.locals.currentlyRunningGames[gameId];
 		}
 		res.send(200);
+	});
+
+	/*
+	 * Currently this endpoint is repeatedly pinged and returns a giant
+	 * json blob of the current game status.
+	 */
+	apiRouter.get('/gamestatus', function (req, res) {
+        let gamestatusData = gameStatusController.get(req);
+        res.json(gamestatusData);
+    });
+
+    apiRouter.post('/startGame', function (req, res) {
+	    res.redirect('/gamestatus'); // SET STARTED TO TRUE AND REDIRECT TO GAMESTATUS
 	});
 
     return apiRouter;
