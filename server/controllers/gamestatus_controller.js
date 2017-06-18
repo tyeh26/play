@@ -12,6 +12,14 @@ const createPlayer = (name, isHost) => {
     }
 };
 
+const createRandomArray = (length) => {
+    let basicArray = Array.apply(null, {length: length+1}).map(Number.call, Number)
+    let randArray = basicArray.sort(function() {
+        return .5 - Math.random();
+    });
+    return randArray;
+};
+
 /* 
  * Takes in a changes object that will only include whatever we need to update
  * on the player.
@@ -35,6 +43,7 @@ module.exports = exports = {
         let wagers = [];
         let rolledFaces = [];
         let currentPlayer = null;
+        let started = false;
 
         players[hostId] = createPlayer(hostName, true);
 
@@ -43,18 +52,33 @@ module.exports = exports = {
             players,
             wagers,
             rolledFaces,
-            currentPlayer
+            currentPlayer,
+            started
         };
     },
 
-    addPlayer(req, playerId, playerName) {
+    addPlayer(req, gameId, playerId, playerName) {
         req.app.locals.gamestatus['players'][playerId] = createPlayer(
             playerName,
             false
         );
     },
 
-    startGame() {
-        // randomly give players order
+    startGame(req) {
+        let gameStatus = req.app.locals.gamestatus; 
+        let numberOfPlayers = Object.keys(gameStatus['players']).length;
+        let randArray = createRandomArray(numberOfPlayers);
+        let order = 0;
+        let playerId;
+
+        // Randomly give players an order
+        for (playerId in gameStatus['players']) {
+            if (gameStatus['players'].hasOwnProperty(playerId)) {
+                gameStatus['players'][playerId]['order'] = randArray[order];
+                order++;
+            }
+        }
+
+        gameStatus['started'] = true;
     }
 };

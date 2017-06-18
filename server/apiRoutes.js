@@ -64,7 +64,7 @@ module.exports = function(app) {
 			let gameId = gameId;
 
 			// Add the player to the gamestatus object
-			gameStatusController.addPlayer(req, userId, gameId, name);
+			gameStatusController.addPlayer(req, gameId, userId, name);
 
 			res.json({
 				gameId: gameId,
@@ -74,6 +74,24 @@ module.exports = function(app) {
 		} else {
 			res.send(500, {status:500, message: 'Game Does Not Exist'});
 		}
+	});
+
+	/*
+	 * Currently this endpoint is repeatedly pinged and returns a giant
+	 * json blob of the current game status.
+	 */
+	apiRouter.get('/gamestatus', function (req, res) {
+        let gamestatusData = gameStatusController.get(req);
+        res.json(gamestatusData);
+    });
+
+	/*
+	 * Sets the gamestatus of start to true, gives players an order,
+	 * and then redirects.
+	 */
+    apiRouter.post('/startGame', function (req, res) {
+    	gameStatusController.startGame(req);
+	    res.redirect('/gamestatus'); 
 	});
 
 	/*
@@ -89,18 +107,10 @@ module.exports = function(app) {
 		res.send(200);
 	});
 
-	/*
-	 * Currently this endpoint is repeatedly pinged and returns a giant
-	 * json blob of the current game status.
-	 */
-	apiRouter.get('/gamestatus', function (req, res) {
-        let gamestatusData = gameStatusController.get(req);
-        res.json(gamestatusData);
-    });
 
-    apiRouter.post('/startGame', function (req, res) {
-	    res.redirect('/gamestatus'); // SET STARTED TO TRUE AND REDIRECT TO GAMESTATUS
-	});
+
+	// add wager
+	// challenge
 
     return apiRouter;
 };
