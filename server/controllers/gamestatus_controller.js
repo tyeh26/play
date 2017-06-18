@@ -122,9 +122,9 @@ module.exports = exports = {
         // Set current player to next
         if (currentPlayerIndex === gameStatus['playersInOrder'].length - 1) {
             // If currentPlayer is last, next player is first
-            currentPlayer = gameStatus['playersInOrder'][0];
+            gameStatus['currentPlayer'] = gameStatus['playersInOrder'][0];
         } else {
-            currentPlayer = gameStatus['playersInOrder'][currentPlayerIndex + 1];
+            gameStatus['currentPlayer'] = gameStatus['playersInOrder'][currentPlayerIndex + 1];
         }
 
     },
@@ -183,7 +183,7 @@ module.exports = exports = {
                 }
             }
         }
-        debugger;
+
         if (!challengeSuccess) {
             // Challenge failed
             gameStatus['challengeSuccess'] = false;

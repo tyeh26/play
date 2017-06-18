@@ -21,14 +21,9 @@ module.exports = function(app) {
 	apiRouter.post('/hostGame', function(req, res) {
 		let {gameId, userId, name} = req.body;
 		req.app.locals.currentlyRunningGames = req.app.locals.currentlyRunningGames || {};
+		req.app.locals.gameToUsersMap = req.app.locals.gameToUsersMap || {};
 
-		if (!userId || isNaN(userId)) {
-			if (!req.app.locals.userIds) {
-				req.app.locals.userIds = []
-			}
-			userId = userController.createUser(req.app.locals.userIds);
-			req.app.locals.userIds.push(userId);
-		}
+		userId = userController.createUser(req, userId, gameId);
 
 		// Make sure this game is not already currently being hosted
 		if (!req.app.locals.currentlyRunningGames[gameId]) {
@@ -58,11 +53,10 @@ module.exports = function(app) {
 	apiRouter.post('/joinGame', function(req, res) {
 		let {gameId, userId, name} = req.body;
 		req.app.locals.currentlyRunningGames = req.app.locals.currentlyRunningGames || {};
+		req.app.locals.gameToUsersMap = req.app.locals.gameToUsersMap || {};
 
-		if (!userId || isNaN(userId)) {
-			userId = userController.createUser(req.app.locals.userIds);
-			req.app.locals.userIds.push(userId);
-		}
+		userId = userController.createUser(req, userId, gameId);
+
 
 		// Check that the game is currently running
 		if (req.app.locals.currentlyRunningGames[gameId]) {
@@ -116,7 +110,6 @@ module.exports = function(app) {
 	apiRouter.post('/wager', function(req, res) {
 		// change the currentplayer
         let {gameId, userId, numberOfDie, face} = req.body;
-debugger
         gameStatusController.addWager(req, gameId, userId, numberOfDie, face);
         res.send(200);
     });
