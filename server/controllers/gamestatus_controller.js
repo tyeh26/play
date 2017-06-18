@@ -13,7 +13,7 @@ const generateDiceRolls = (numberOfDie) => {
     return diceRolls;
 };
 
-const createPlayer = (name, isHost) => {   
+const createPlayer = (name, isHost) => {
     let diceRolls = generateDiceRolls(defaultDieNumber);
 
     return {
@@ -26,22 +26,35 @@ const createPlayer = (name, isHost) => {
 };
 
 const createRandomArray = (length) => {
-    let basicArray = Array.apply(null, {length: length+1}).map(Number.call, Number)
+    let basicArray = Array.apply(null, {length: length}).map(Number.call, Number) ;
     let randArray = basicArray.sort(function() {
         return .5 - Math.random();
     });
+
     return randArray;
 };
 
 const createWager = (userId, wagerNumberOfDie, face) => {
     return {
         userId,
-        numberOfDie: wagerNumberOfDie,
         face,
+        numberOfDie: wagerNumberOfDie,
     }
 };
 
-/* 
+/* Takes in a players object with the format of
+ * {amira:{'order':3}, teddy:{'order':4}} and returns an array like
+ * ['amira', 'teddy']
+ */
+const createOrderedPlayersArray = (players) => {
+    let sortedPlayersObject = Object.entries(players).sort(
+        function(player1, player2) { return player1[1].order > player2[1].order }
+    );
+    let sortedPlayersArray = sortedPlayersObject.map(function(player) { return player[0] });
+    return sortedPlayersArray;
+};
+
+/*
  * Takes in a changes object that will only include whatever we need to update
  * on the player.
  */
@@ -50,11 +63,11 @@ const createWager = (userId, wagerNumberOfDie, face) => {
 };
 
 module.exports = exports = {
-    
+
     getGamestatus(req, gameId) {
         if (!req.app.locals.games) {
             req.app.locals.games = {};
-        } 
+        }
 
         if (!req.app.locals.games[gameId]) {
             // Should theoretically never hit this line
@@ -96,21 +109,24 @@ module.exports = exports = {
     },
 
     addWager(req, gameId, playerId, numberOfDie, face) {
-        req.app.locals.games[gameId]['wagers'].push(createWager(
+        let gameStatus = req.app.locals.games[gameId];
+        // Add the wager to the wagers array which is sorted in order
+        gameStatus['wagers'].push(createWager(
             playerId,
             numberOfDie,
             face
         ));
+        let currentPlayer = gameStatus['currentPlayer'];
+        let currentPlayerIndex = gameStatus['playersInOrder'].indexOf(currentPlayer);
 
-        let currentPlayer = req.app.locals.games[gameId]['currentPlayer'];
-        let playerOrder = []; // user Ids in order
-        let players = req.app.locals.games[gameId]['players'];
-        Object.keys(players).map( (userId) =>
-            playerOrder[players[userId].order] = userId
-        );
-        let currentPlayerOrder = players[currentPlayer].order;
-        let nextPlayers = playerOrder.slice(currentPlayerOrder).concat(playerOrder.slice(0, currentPlayerOrder));
-        req.app.locals.games[gameId]['currentPlayer'] = nextPlayers[1 % players.length];
+        // Set current player to next
+        if (currentPlayerIndex === gameStatus['playersInOrder'].length - 1) {
+            // If currentPlayer is last, next player is first
+            currentPlayer = gameStatus['playersInOrder'][0];
+        } else {
+            currentPlayer = gameStatus['playersInOrder'][currentPlayerIndex + 1];
+        }
+
     },
 
     startGame(req, gameId) {
@@ -118,21 +134,26 @@ module.exports = exports = {
         let numberOfPlayers = Object.keys(gameStatus['players']).length;
         let randArray = createRandomArray(numberOfPlayers);
         let order = 0;
+        // Store for simplified logic later, can remove players when they lose from here
+        let playersInOrder = [];
         let playerId, assignedOrder;
 
-        // Randomly give players an order
+        // Randomly give players an order - refactor later to reuse in challenge
         for (playerId in gameStatus['players']) {
             if (gameStatus['players'].hasOwnProperty(playerId)) {
                 assignedOrder = randArray[order];
                 gameStatus['players'][playerId]['order'] = assignedOrder;
                 order++;
                 // Set current player
-                if (assignedOrder === 1) {
+                if (assignedOrder === 0) {
                     gameStatus['currentPlayer'] = playerId;
                 }
             }
         }
 
+        // Create array of players orders
+        gameStatus['playersInOrder'] = createOrderedPlayersArray(gameStatus['players']);
+        // Set game status to started
         gameStatus['started'] = true;
     },
 
@@ -189,6 +210,6 @@ module.exports = exports = {
                 }
             }
 
-        }         
+        }
     }
 };

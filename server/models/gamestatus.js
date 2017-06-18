@@ -1,6 +1,6 @@
 module.exports = exports = {
     players: {
-        aaa: {name: 'Awesome Amira', isHost: false, numberOfDie: 5, order:0},
+        aaa: {name: 'Awesome Amira', isHost: false, numberOfDie: 5, order:0, diceRolls: [0,1,3,4,5]},
         abc: {name: 'Teddy', isHost: true, numberOfDie: 5, order:1},
         zzz: {name: 'John Doe', isHost: false, numberOfDie: 5, order:2},
         xyz: {name: 'LittleBobbyTables', isHost: false, numberOfDie: 5, order:3},
@@ -14,4 +14,5 @@ module.exports = exports = {
         {userId:"aaa",numberOfDie:5,face:3},
     ],
     currentPlayer: "abc",
+    playersInOrder: ['Awesome Amira', 'Teddy', 'John Doe', 'LittleBobbyTables']
 };
