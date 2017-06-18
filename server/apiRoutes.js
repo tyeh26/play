@@ -20,10 +20,14 @@ module.exports = function(app) {
 	 */
 	apiRouter.post('/hostGame', function(req, res) {
 		let {gameId, userId, name} = req.body;
-		req.app.locals.currentlyRunningGames = app.locals.currentlyRunningGames || {};
+		req.app.locals.currentlyRunningGames = req.app.locals.currentlyRunningGames || {};
 
-		if (!userId) {
-			userId = userController.createUser(req.requestId);
+		if (!userId || isNaN(userId)) {
+			if (!req.app.locals.userIds) {
+				req.app.locals.userIds = []
+			}
+			userId = userController.createUser(req.app.locals.userIds);
+			req.app.locals.userIds.push(userId);
 		}
 
 		// Make sure this game is not already currently being hosted
@@ -53,10 +57,11 @@ module.exports = function(app) {
 	 */
 	apiRouter.post('/joinGame', function(req, res) {
 		let {gameId, userId, name} = req.body;
-		req.app.locals.currentlyRunningGames = app.locals.currentlyRunningGames || {};
+		req.app.locals.currentlyRunningGames = req.app.locals.currentlyRunningGames || {};
 
-		if (!userId) {
-			userId = userController.createUser(req.requestId);
+		if (!userId || isNaN(userId)) {
+			userId = userController.createUser(req.app.locals.userIds);
+			req.app.locals.userIds.push(userId);
 		}
 
 		// Check that the game is currently running
@@ -68,7 +73,7 @@ module.exports = function(app) {
 				gameId: gameId,
 				userId: userId,
 				name: name
-			});			
+			});
 		} else {
 			res.send(500, {status:500, message: 'Game Does Not Exist'});
 		}
@@ -92,7 +97,7 @@ module.exports = function(app) {
     	let {gameId} = req.body;
 
     	gameStatusController.startGame(req, gameId);
-	    res.send(200); 
+	    res.send(200);
 	});
 
 	/*
