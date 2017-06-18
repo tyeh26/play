@@ -72,11 +72,8 @@ export default class LobbyView extends React.Component {
             headers: headers,
             redirect: 'follow'
         }).then(response => {
-            return response.json()
-        }).then(j => {
-            browserHistory.push(`/play/liarsdice/${j.gameId}`);
-        });
-
+            browserHistory.push(`/play/liarsdice/${this.state.gameId}`);
+        }
     }
 
     render() {
