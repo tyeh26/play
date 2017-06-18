@@ -32,7 +32,7 @@ module.exports = function(app) {
 			req.app.locals.currentlyRunningGames[gameId] = true;
 
 			// Generate the gamestatus object here
-			gameStatusController.create(req, userId, gameId, name);
+			gameStatusController.createGame(req, userId, gameId, name);
 
 			res.json({
 				gameId: gameId,
@@ -61,8 +61,6 @@ module.exports = function(app) {
 
 		// Check that the game is currently running
 		if (req.app.locals.currentlyRunningGames[gameId]) {
-			let gameId = gameId;
-
 			// Add the player to the gamestatus object
 			gameStatusController.addPlayer(req, gameId, userId, name);
 
@@ -81,7 +79,8 @@ module.exports = function(app) {
 	 * json blob of the current game status.
 	 */
 	apiRouter.get('/gamestatus', function (req, res) {
-        let gamestatusData = gameStatusController.get(req);
+		let {gameId} = req.query;
+        let gamestatusData = gameStatusController.getGamestatus(req, gameId);
         res.json(gamestatusData);
     });
 
@@ -90,8 +89,10 @@ module.exports = function(app) {
 	 * and then redirects.
 	 */
     apiRouter.post('/startGame', function (req, res) {
-    	gameStatusController.startGame(req);
-	    res.redirect('/gamestatus'); 
+    	let {gameId} = req.body;
+
+    	gameStatusController.startGame(req, gameId);
+	    // res.redirect('/gamestatus'); 
 	});
 
 	/*

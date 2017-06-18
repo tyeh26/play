@@ -30,24 +30,32 @@ const createRandomArray = (length) => {
 
 module.exports = exports = {
     
-    get(req) {
-        if (!req.app.locals.gamestatus) {
-            return {}
-        } else {
-            return req.app.locals.gamestatus;
+    getGamestatus(req, gameId) {
+        if (!req.app.locals.games) {
+            req.app.locals.games = {};
+        } 
+
+        if (!req.app.locals.games[gameId]) {
+            // Should theoretically never hit this line
+            req.app.locals.games[gameId] = {};
         }
+
+        return req.app.locals.games[gameId];
     },
 
-    create(req, hostId, gameId, hostName) {
+    createGame(req, hostId, gameId, hostName) {
         let players = {};
         let wagers = [];
         let rolledFaces = [];
         let currentPlayer = null;
         let started = false;
 
-        players[hostId] = createPlayer(hostName, true);
+        if (!req.app.locals.games) {
+            req.app.locals.games = {};
+        }
 
-        req.app.locals.gamestatus = {
+        players[hostId] = createPlayer(hostName, true);
+        let game = {
             gameId,
             players,
             wagers,
@@ -55,17 +63,19 @@ module.exports = exports = {
             currentPlayer,
             started
         };
+
+        req.app.locals.games[gameId] = game;
     },
 
     addPlayer(req, gameId, playerId, playerName) {
-        req.app.locals.gamestatus['players'][playerId] = createPlayer(
+        req.app.locals.games[gameId]['players'][playerId] = createPlayer(
             playerName,
             false
         );
     },
 
-    startGame(req) {
-        let gameStatus = req.app.locals.gamestatus; 
+    startGame(req, gameId) {
+        let gameStatus = req.app.locals.games[gameId];
         let numberOfPlayers = Object.keys(gameStatus['players']).length;
         let randArray = createRandomArray(numberOfPlayers);
         let order = 0;

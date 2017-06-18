@@ -43,7 +43,7 @@ export default class LobbyView extends React.Component {
     }
 
     updateLobbyState() {
-        fetch(`/api/gamestatus?userId=${this.state.userId}&gameId${this.state.gameId}`)
+        fetch(`/api/gamestatus?userId=${this.state.userId}&gameId=${this.state.gameId}`)
         .then(response => {
             return response.json()
         }).then(j => {
@@ -64,8 +64,8 @@ export default class LobbyView extends React.Component {
 
         fetch("/api/startGame", {
             method: "POST",
-            body: JSON.stringify(payload),
-            redirect: 'follow',
+            body: JSON.stringify(payload)
+            // redirect: 'follow',
         }).then(response => {
             return response.json()
         }).then(j => {
