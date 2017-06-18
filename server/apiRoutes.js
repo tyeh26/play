@@ -114,7 +114,9 @@ module.exports = function(app) {
     });
 
     apiRouter.post('/challenge', function(req, res) {
+    	let {gameId, userId} = req.body;
 
+    	
     });
 
     return apiRouter;

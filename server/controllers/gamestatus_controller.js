@@ -3,12 +3,25 @@
 // Update this variable to determine how many die each player gets
 const defaultDieNumber = 5;
 
-const createPlayer = (name, isHost) => {
+const generateDiceRolls = () => {
+    let diceRolls = [];
+
+    for (let i = 0; i<defaultDieNumber; i++) {
+        diceRolls.push(Math.floor(Math.random() * 6 + 1));
+    }
+
+    return diceRolls;
+};
+
+const createPlayer = (name, isHost) => {   
+    let diceRolls = generateDiceRolls();
+
     return {
         name,
         isHost,
+        diceRolls,
         numberOfDie: defaultDieNumber,
-        order: null
+        order: null,
     }
 };
 
