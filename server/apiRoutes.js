@@ -92,7 +92,7 @@ module.exports = function(app) {
     	let {gameId} = req.body;
 
     	gameStatusController.startGame(req, gameId);
-	    // res.redirect('/gamestatus'); 
+	    res.send(200); 
 	});
 
 	/*

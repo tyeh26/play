@@ -64,16 +64,18 @@ export default class LobbyView extends React.Component {
         event.preventDefault();
 
         const payload = { gameId: this.state.gameId, userId: this.state.userId }
+        const headers = new Headers({'Content-Type': 'application/json'});
 
         fetch("/api/startGame", {
             method: "POST",
-            body: JSON.stringify(payload)
-            // redirect: 'follow',
+            body: JSON.stringify(payload),
+            headers: headers,
+            redirect: 'follow'
         }).then(response => {
             return response.json()
         }).then(j => {
             browserHistory.push(`/play/liarsdice/${j.gameId}`);
-        })
+        });
 
     }
 
