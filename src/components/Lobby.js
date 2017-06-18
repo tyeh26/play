@@ -73,7 +73,7 @@ export default class LobbyView extends React.Component {
             redirect: 'follow'
         }).then(response => {
             browserHistory.push(`/play/liarsdice/${this.state.gameId}`);
-        }
+        })
     }
 
     render() {

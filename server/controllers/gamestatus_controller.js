@@ -33,6 +33,14 @@ const createRandomArray = (length) => {
     return randArray;
 };
 
+const createWager = (userId, wagerNumberOfDie, face) => {
+    return {
+        userId,
+        numberOfDie: wagerNumberOfDie,
+        face,
+    }
+};
+
 /* 
  * Takes in a changes object that will only include whatever we need to update
  * on the player.
@@ -85,6 +93,24 @@ module.exports = exports = {
             playerName,
             false
         );
+    },
+
+    addWager(req, gameId, playerId, numberOfDie, face) {
+        req.app.locals.games[gameId]['wagers'].push(createWager(
+            playerId,
+            numberOfDie,
+            face
+        ));
+
+        let currentPlayer = req.app.locals.games[gameId]['currentPlayer'];
+        let playerOrder = []; // user Ids in order
+        let players = req.app.locals.games[gameId]['players'];
+        Object.keys(players).map( (userId) =>
+            playerOrder[players[userId].order] = userId
+        );
+        let currentPlayerOrder = players[currentPlayer].order;
+        let nextPlayers = playerOrder.slice(currentPlayerOrder).concat(playerOrder.slice(0, currentPlayerOrder));
+        req.app.locals.games[gameId]['currentPlayer'] = nextPlayers[1 % players.length];
     },
 
     startGame(req, gameId) {

@@ -58,7 +58,7 @@ export default class LiarsDiceView extends React.Component {
         .then(response => { return response.json() })
         .then(j => {
             this.setState({players: j.players});
-            this.setState({rolledFaces: j.rolledFaces});
+            this.setState({rolledFaces: j.players[this.state.userId].diceRolls});
             this.setState({wagers: j.wagers});
             this.setState({myTurn: j.currentPlayer == this.state.userId});
             let me = j.players[this.state.userId];
@@ -93,8 +93,7 @@ export default class LiarsDiceView extends React.Component {
         event.preventDefault();
 
         let lastWager = this.state.wagers[this.state.wagers.length - 1]
-
-        if (this.state.wagerFace <= this.lastWager.face && this.state.wagerNumberOfDie <= this.lastWager.numberOfDie) {
+        if (lastWager && this.state.wagerFace <= lastWager.face && this.state.wagerNumberOfDie <= lastWager.numberOfDie) {
             this.setState({openBadWagerDialog: true});
         } else {
             const payload = { gameId: this.state.gameId, userId: this.state.userId, numberOfDie: this.state.wagerNumberOfDie, face: this.state.wagerFace }
@@ -148,7 +147,7 @@ export default class LiarsDiceView extends React.Component {
                     )}
                 </div>
                 {this.state.myTurn ?
-                    <form onSubmit={this.handlewager}>
+                    <form onSubmit={this.handleWager}>
                     <DropDownMenu value={this.state.wagerNumberOfDie} onChange={this.handleWagerNumberOfDieChange}>
                         {rowsOfWhatever}
                     </DropDownMenu>

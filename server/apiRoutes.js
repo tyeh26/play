@@ -110,7 +110,10 @@ module.exports = function(app) {
 
 	apiRouter.post('/wager', function(req, res) {
 		// change the currentplayer
-        let {gameId} = req.body
+        let {gameId, userId, numberOfDie, face} = req.body;
+debugger
+        gameStatusController.addWager(req, gameId, userId, numberOfDie, face);
+        res.send(200);
     });
 
     apiRouter.post('/challenge', function(req, res) {
@@ -118,6 +121,7 @@ module.exports = function(app) {
     	gameStatusController.challenge(req, gameId, userId);
     	res.json({});
     });
+	// challenge
 
     return apiRouter;
 };
