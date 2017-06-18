@@ -26,9 +26,7 @@ export default class Dice extends React.Component {
     render() {
         if (this.state.rollFace || this.props.face) {
             return (
-
-                <span className="dice">
-                    <img className="dice-image" src={`/static/img/dice-${this.state.rollFace || this.props.face}.svg`}/>
+                <span className={`dice dice-${this.state.rollFace || this.props.face} ${this.props.size}`}>
                 </span>
             )
         } else {

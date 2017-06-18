@@ -1,7 +1,38 @@
-.dice-image {
-    width: 64px;
-    height: 64px;
+.dice {
     padding: 5px;
+    display: inline;
+}
+
+.small-dice {
+    background-size:16px 16px;
+}
+
+.medium-dice {
+    background-size: 64px;
+}
+
+.dice-1 {
+    background:url("/static/img/dice-1.svg") center right no-repeat;
+}
+
+.dice-2 {
+    background:url("/static/img/dice-2.svg") center right no-repeat;
+}
+
+.dice-3 {
+    background:url("/static/img/dice-3.svg") center right no-repeat;
+}
+
+.dice-4 {
+    background:url("/static/img/dice-4.svg") center right no-repeat;
+}
+
+.dice-5 {
+    background:url("/static/img/dice-5.svg") center right no-repeat;
+}
+
+.dice-6 {
+    background:url("/static/img/dice-6.svg") center right no-repeat;
 }
 
 .full-width {

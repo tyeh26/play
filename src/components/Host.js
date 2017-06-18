@@ -32,7 +32,6 @@ export default class HostView extends React.Component {
 
         fetch("/api/hostGame", {
             method: "POST",
-            redirect: "follow",
             headers: headers,
             body: JSON.stringify(this.state)
         })

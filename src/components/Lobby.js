@@ -27,10 +27,7 @@ export default class LobbyView extends React.Component {
             browserHistory.push("/");
         }
 
-
-        this.setState({
-            userId: userId,
-        });
+        this.setState({userId: userId});
 
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -46,7 +43,7 @@ export default class LobbyView extends React.Component {
     }
 
     updateLobbyState() {
-        fetch(`/api/gamestatus?userId=${this.state.userId}`)
+        fetch(`/api/gamestatus?userId=${this.state.userId}&${this.state.gameId}`)
         .then(response => {
             return response.json()
         }).then(j => {
@@ -65,9 +62,10 @@ export default class LobbyView extends React.Component {
 
         const payload = { gameId: this.state.gameId, userId: this.state.userId }
 
-        fetch("/api/killPeople", {
+        fetch("/api/startGame", {
             method: "POST",
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            redirect: 'follow',
         }).then(response => {
             return response.json()
         }).then(j => {

@@ -5,7 +5,6 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import Dice from './Dice';
 import {browserHistory} from 'react-router';
 
 export default class GuestView extends React.Component {
@@ -21,7 +20,6 @@ export default class GuestView extends React.Component {
         this.state = {
             gameId: "",
             name: user_id,
-            faces: [1, 2, 3, 5, 5],
             isRolling: false,
         };
 
@@ -62,11 +60,6 @@ export default class GuestView extends React.Component {
     render() {
         return (
             <div className="guest-view">
-                <div>
-                    <Dice face={this.state.faces[0]} isRolling={this.state.isRolling} />
-                    <Dice face={this.state.faces[1]} isRolling={this.state.isRolling} />
-                    <Dice face={this.state.faces[2]} isRolling={this.state.isRolling} />
-                </div>
                 <form onSubmit={this.handleSubmit}>
                     <div><TextField hintText="Game Id" value={this.state.gameId} onChange={this.handleGameIdChange} fullWidth={true} /></div>
                     <div><TextField hintText="A Name" value={this.state.name} onChange={this.handleNameChange} fullWidth={true} /></div>
