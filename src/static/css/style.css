@@ -1,14 +1,16 @@
 .dice {
-    padding: 5px;
-    display: inline;
+    margin: 5px;
+    display: inline-block;
 }
 
 .small-dice {
-    background-size:16px 16px;
+    width: 16px;
+    height: 16px;
 }
 
-.medium-dice {
-    background-size: 64px;
+.large-dice {
+    width: 64px;
+    height: 64px;
 }
 
 .dice-1 {

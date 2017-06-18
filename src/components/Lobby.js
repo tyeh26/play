@@ -43,7 +43,7 @@ export default class LobbyView extends React.Component {
     }
 
     updateLobbyState() {
-        fetch(`/api/gamestatus?userId=${this.state.userId}&${this.state.gameId}`)
+        fetch(`/api/gamestatus?userId=${this.state.userId}&gameId${this.state.gameId}`)
         .then(response => {
             return response.json()
         }).then(j => {
