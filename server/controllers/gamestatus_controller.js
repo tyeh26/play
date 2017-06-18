@@ -79,13 +79,18 @@ module.exports = exports = {
         let numberOfPlayers = Object.keys(gameStatus['players']).length;
         let randArray = createRandomArray(numberOfPlayers);
         let order = 0;
-        let playerId;
+        let playerId, assignedOrder;
 
         // Randomly give players an order
         for (playerId in gameStatus['players']) {
             if (gameStatus['players'].hasOwnProperty(playerId)) {
-                gameStatus['players'][playerId]['order'] = randArray[order];
+                assignedOrder = randArray[order];
+                gameStatus['players'][playerId]['order'] = assignedOrder;
                 order++;
+                // Set current player
+                if (assignedOrder === 1) {
+                    gameStatus['currentPlayer'] = playerId;
+                }
             }
         }
 

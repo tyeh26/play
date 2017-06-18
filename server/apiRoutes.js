@@ -108,12 +108,14 @@ module.exports = function(app) {
 		res.send(200);
 	});
 
-
-
 	apiRouter.post('/wager', function(req, res) {
+		// change the currentplayer
         let {gameId} = req.body
-    })
-	// challenge
+    });
+
+    apiRouter.post('/challenge', function(req, res) {
+
+    });
 
     return apiRouter;
 };
