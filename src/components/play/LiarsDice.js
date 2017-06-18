@@ -54,7 +54,7 @@ export default class LiarsDiceView extends React.Component {
     }
 
     updateGameState(lobbyState) {
-        fetch(`/api/gamestatus?userId=${this.state.userId}&gameId${this.state.gameId}`)
+        fetch(`/api/gamestatus?userId=${this.state.userId}&gameId=${this.state.gameId}`)
         .then(response => { return response.json() })
         .then(j => {
             this.setState({players: j.players});
