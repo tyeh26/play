@@ -157,13 +157,14 @@ module.exports = exports = {
         gameStatus['started'] = true;
     },
 
+    // userId is the person challenging
     challenge(req, gameId, userId) {
         let gameStatus = req.app.locals.games[gameId];
-        let lastWager = gameStatus.wagers[-1];
+        let lastWager = gameStatus['wagers'][gameStatus['wagers'].length-1];
         let numberOfDie = lastWager['numberOfDie'];
         let faceNumber = lastWager['faceNumber'];
         let numberOfMatchingDie = 0;
-        let diceRolls;
+        let diceRolls, playerId, roll, loserId;
         let challengeSuccess = false;
 
         for (playerId in gameStatus['players']) {
@@ -174,7 +175,7 @@ module.exports = exports = {
                         numberOfMatchingDie++;
 
                         if (numberOfMatchingDie === numberOfDie) {
-                            // Challenge succeededs
+                            // Challenge succeeded
                             challengeSuccess = true;
                             gameStatus['challengeSuccess'] = true;
                         }
@@ -182,34 +183,52 @@ module.exports = exports = {
                 }
             }
         }
-
+        debugger;
         if (!challengeSuccess) {
             // Challenge failed
             gameStatus['challengeSuccess'] = false;
+            loserId = gameStatus['players'][userId];
+        } else {
+            // If the challenge succeeded, the loser is the user_id of the last wager
+            loserId = lastWager[userId];
+        }
 
-            // Reduce dicefor the current player
-            gameStatus['players'][userId]['numberOfDie']--;
+        // Reduce dice for the loser
+        gameStatus['players'][loserId]['numberOfDie']--;
+
+        // If they have 0 dice, time to kick them out of the game!
+        if (gameStatus['players'][loserId]['numberOfDie'] === 0) {
+            let loserIndex = gameStatus['playersInOrder'].indexOf(loserId);
+            gameStatus['playersInOrder'].splice(loserIndex, 1);
+            delete gameStatus['players'][loserId]; // muahahhaha
         }
 
         // Reset everything
         gameStatus['wagers'] = [];
 
         let numberOfPlayers = Object.keys(gameStatus['players']).length;
+
+        // Will also just create a new order for people to go in!
+        // Since we may have got rid of someone, and yolo y'know?
         let randArray = createRandomArray(numberOfPlayers);
 
+        // Re roll the dice
         for (playerId in gameStatus['players']) {
             if (gameStatus['players'].hasOwnProperty(playerId)) {
-                let numDie = gameStatus['players'][playerId]['numberOfDie']
+                let numDie = gameStatus['players'][playerId]['numberOfDie'];
                 gameStatus['players'][playerId]['diceRolls'] = generateDiceRolls(numDie);
-                assignedOrder = randArray[order];
+                assignedOrder = randArray['order'];
                 gameStatus['players'][playerId]['order'] = assignedOrder;
                 order++;
-                // Set current player
                 if (assignedOrder === 1) {
                     gameStatus['currentPlayer'] = playerId;
                 }
             }
+        }
 
+        // If the person just lost, then we set them as the currentPlayer
+        if (challengeSuccess && gameStatus['players'][userId]) {
+            gameStatus['currentPlayer'] = gameStatus['players'][userId];
         }
     }
 };
