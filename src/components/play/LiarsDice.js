@@ -23,6 +23,8 @@ export default class LiarsDiceView extends React.Component {
             isRolling: false,
             wagers: [],
             nextPlayers: [],
+            wagerNumberOfDie: 1,
+            wagerFace: null,
             openBadWagerDialog: false,
         }
     }
@@ -38,6 +40,8 @@ export default class LiarsDiceView extends React.Component {
         this.updateGameState = this.updateGameState.bind(this);
         this.handleChallenge = this.handleChallenge.bind(this);
         this.handleWager = this.handleWager.bind(this);
+        this.handleWagerNumberOfDieChange = this.handleWagerNumberOfDieChange.bind(this);
+        this.handleWagerFaceChange = this.handleWagerFaceChange.bind(this);
         this.handleCloseBadwagerDialog = this.handleCloseBadwagerDialog.bind(this);
         this.updateGameState();
         let refreshGameInterval = setInterval(this.updateGameState, 300);
@@ -66,6 +70,9 @@ export default class LiarsDiceView extends React.Component {
             let currentPlayerOrder = j.players[j.currentPlayer].order;
             let nextPlayers = playerOrder.slice(currentPlayerOrder).concat(playerOrder.slice(0, currentPlayerOrder));
             this.setState({nextPlayers: nextPlayers});
+
+            //this.setState({wagerNumberOfDie: j.wagers.length < 1 ? 1 : j.wagers[j.wagers.length - 1].numberOfDie});
+            //this.setState({wagerFace: j.wagers.length < 1 ? 1 : j.wagers[j.wagers.length - 1].face});
         })
     }
 
@@ -97,11 +104,23 @@ export default class LiarsDiceView extends React.Component {
         }
     }
 
+    handleWagerNumberOfDieChange(event, index, value) {
+        this.setState({wagerNumberOfDie:value})
+    }
+
+    handleWagerFaceChange(event, index, value) {
+        this.setState({wagerFace:value})
+    }
+
     handleCloseBadwagerDialog() {
         this.setState({openBadWagerDialog: false});
     }
 
     render() {
+        let rowsOfWhatever = [];
+        for (var i =0; i < 101; i++) {
+            rowsOfWhatever.push(<MenuItem value={i} primaryText={i}/>)
+        }
         return (
             <div className="host-view">
                 <List style={{maxHeight: 300, overflow: 'auto'}}>
@@ -124,20 +143,26 @@ export default class LiarsDiceView extends React.Component {
                        <Dice face={face} size="large-dice" isRolling={this.state.isRolling} />
                     )}
                 </div>
-                {this.state.myTurn ? 
-                    <DropDownMenu value={this.state.wagers.length > 0 ? this.state.wagers[this.state.wagers.length - 1].numberofDie : 1}>
+                {this.state.myTurn ?
+                    <form onSubmit={this.handlewager}>
+                    <DropDownMenu value={this.state.wagerNumberOfDie} onChange={this.handleWagerNumberOfDieChange}>
+                        {rowsOfWhatever}
+                    </DropDownMenu>
+                    X
+                    <DropDownMenu value={this.state.wagerFace} onChange={this.handleWagerFaceChange}>
                         <MenuItem value={1} primaryText="1" />
                         <MenuItem value={2} primaryText="2" />
                         <MenuItem value={3} primaryText="3" />
                         <MenuItem value={4} primaryText="4" />
                         <MenuItem value={5} primaryText="5" />
                         <MenuItem value={6} primaryText="6" />
-                        <MenuItem value={7} primaryText="7" />
                     </DropDownMenu>
+                    <div><RaisedButton type="submit" primary={true} label="wager" fullWidth={true} /></div>
+                    </form>
                 : null}
                 {this.state.wagers.length > 0 && this.state.userId != this.state.wagers[this.state.wagers.length - 1].userId ?
                     <form onSubmit={this.handleChallenge}>
-                        <div><RaisedButton type="submit" primary={true} label="challenge" fullWidth={true} /></div>
+                        <div><RaisedButton type="submit" secondary={true} label="challenge" fullWidth={true} /></div>
                     </form>
                 : null}
                 <Dialog
