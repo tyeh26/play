@@ -50,6 +50,9 @@ export default class LobbyView extends React.Component {
             this.setState({players: j.players});
             let me = j.players[this.state.userId];
             this.setState({isHost: me.isHost});
+            if (j.started) {
+                browserHistory.push(`/play/liarsdice/${j.gameId}`);
+            }
         });
     }
 

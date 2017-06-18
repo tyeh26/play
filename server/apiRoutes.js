@@ -110,7 +110,9 @@ module.exports = function(app) {
 
 
 
-	// add wager
+	apiRouter.post('/wager', function(req, res) {
+        let {gameId} = req.body
+    })
 	// challenge
 
     return apiRouter;

@@ -80,9 +80,11 @@ export default class LiarsDiceView extends React.Component {
         event.preventDefault();
 
         const payload = { gameId: this.state.gameId, userId: this.state.userId }
+        const headers = new Headers({'Content-Type': 'application/json'});
 
         fetch('/api/challenge', {
             method: "POST",
+            headers: headers,
             body: JSON.stringify(payload)
         })
     }
@@ -96,9 +98,11 @@ export default class LiarsDiceView extends React.Component {
             this.setState({openBadWagerDialog: true});
         } else {
             const payload = { gameId: this.state.gameId, userId: this.state.userId, numberOfDie: this.state.wagerNumberOfDie, face: this.state.wagerFace }
+            const headers = new Headers({'Content-Type': 'application/json'});
 
             fetch('/api/wager', {
                 method: "POST",
+                headers: headers,
                 body: JSON.stringify(payload)
             })
         }
