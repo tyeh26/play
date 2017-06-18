@@ -4,12 +4,12 @@
 const defaultDieNumber = 5;
 
 const createPlayer = (name, isHost) => {
-	return {
-		name,
-		isHost, 
-		numberOfDie: defaultDieNumber,
-		order: null
-	}
+    return {
+        name,
+        isHost,
+        numberOfDie: defaultDieNumber,
+        order: null
+    }
 };
 
 /* 
@@ -23,30 +23,38 @@ const createPlayer = (name, isHost) => {
 module.exports = exports = {
     
     get(req) {
-    	if (!req.app.locals.gamestatus) {
-    		return {}
-    	} else {
-    		return req.app.locals.gamestatus;
-    	}
+        if (!req.app.locals.gamestatus) {
+            return {}
+        } else {
+            return req.app.locals.gamestatus;
+        }
     },
 
     create(req, hostId, gameId, hostName) {
-    	let players = {};
-    	let wagers = [];
-    	let rolledFaces = [];
-    	let currentPlayer = null;
+        let players = {};
+        let wagers = [];
+        let rolledFaces = [];
+        let currentPlayer = null;
 
-    	players[hostId] = createPlayer(hostName, true);
+        players[hostId] = createPlayer(hostName, true);
 
-    	req.app.locals.gamestatus = {
-    		players,
-    		wagers,
-    		rolledFaces,
-    		currentPlayer
-    	};
+        req.app.locals.gamestatus = {
+            gameId,
+            players,
+            wagers,
+            rolledFaces,
+            currentPlayer
+        };
+    },
+
+    addPlayer(req, playerId, playerName) {
+        req.app.locals.gamestatus['players'][playerId] = createPlayer(
+            playerName,
+            false
+        );
     },
 
     startGame() {
-    	// randomly give players order
+        // randomly give players order
     }
 };

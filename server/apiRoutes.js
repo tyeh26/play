@@ -62,6 +62,10 @@ module.exports = function(app) {
 		// Check that the game is currently running
 		if (req.app.locals.currentlyRunningGames[gameId]) {
 			let gameId = gameId;
+
+			// Add the player to the gamestatus object
+			gameStatusController.addPlayer(req, userId, gameId, name);
+
 			res.json({
 				gameId: gameId,
 				userId: userId,
