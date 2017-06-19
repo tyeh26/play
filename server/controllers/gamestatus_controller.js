@@ -171,9 +171,7 @@ module.exports = exports = {
                 diceRolls = gameStatus['players'][playerId]['diceRolls'];
                 for (rollIndex in diceRolls) {
                     let roll = diceRolls[rollIndex];
-                    console.log("Checking " + roll + " against " + faceNumber + " and 1");
                     if (roll === faceNumber || roll === 1) {
-                        console.log("nice");
                         numberOfMatchingDie++;
                         if (numberOfMatchingDie === numberOfDie) {
                             // Challenge fail
@@ -191,7 +189,6 @@ module.exports = exports = {
             // If the challenge succeeded, the loser is the user_id of the last wager
             loserId = lastWager['userId'];
         }
-console.log("loser is " + gameStatus['players'][loserId]["name"]);
 
         // Reduce dice for the loser
         gameStatus['players'][loserId]['numberOfDie']--;
