@@ -57,6 +57,7 @@ export default class LiarsDiceView extends React.Component {
         fetch(`/api/gamestatus?userId=${this.state.userId}&gameId=${this.state.gameId}`)
         .then(response => { return response.json() })
         .then(j => {
+            console.log(j);
             this.setState({players: j.players});
             this.setState({rolledFaces: j.players[this.state.userId].diceRolls});
             this.setState({wagers: j.wagers});
@@ -93,7 +94,9 @@ export default class LiarsDiceView extends React.Component {
         event.preventDefault();
 
         let lastWager = this.state.wagers[this.state.wagers.length - 1]
-        if (lastWager && this.state.wagerFace <= lastWager.face && this.state.wagerNumberOfDie <= lastWager.numberOfDie) {
+        if (this.state.wagerFace < 1 || this.state.wagerNumberOfDie < 1) {
+            this.setState({openBadWagerDialog: true});
+        } else if (lastWager && this.state.wagerFace <= lastWager.face && this.state.wagerNumberOfDie <= lastWager.numberOfDie) {
             this.setState({openBadWagerDialog: true});
         } else {
             const payload = { gameId: this.state.gameId, userId: this.state.userId, numberOfDie: this.state.wagerNumberOfDie, face: this.state.wagerFace }

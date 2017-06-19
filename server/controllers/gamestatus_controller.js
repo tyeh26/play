@@ -126,7 +126,6 @@ module.exports = exports = {
         } else {
             gameStatus['currentPlayer'] = gameStatus['playersInOrder'][currentPlayerIndex + 1];
         }
-
     },
 
     startGame(req, gameId) {
@@ -162,22 +161,23 @@ module.exports = exports = {
         let gameStatus = req.app.locals.games[gameId];
         let lastWager = gameStatus['wagers'][gameStatus['wagers'].length-1];
         let numberOfDie = lastWager['numberOfDie'];
-        let faceNumber = lastWager['faceNumber'];
+        let faceNumber = lastWager['face'];
         let numberOfMatchingDie = 0;
-        let diceRolls, playerId, roll, loserId;
-        let challengeSuccess = false;
+        let diceRolls, playerId, roll, loserId, rollIndex;
+        let challengeSuccess = true;
 
         for (playerId in gameStatus['players']) {
             if (gameStatus['players'].hasOwnProperty(playerId)) {
                 diceRolls = gameStatus['players'][playerId]['diceRolls'];
-                for (roll in diceRolls) {
-                    if (roll === faceNumber) {
+                for (rollIndex in diceRolls) {
+                    let roll = diceRolls[rollIndex];
+                    console.log("Checking " + roll + " against " + faceNumber + " and 1");
+                    if (roll === faceNumber || roll === 1) {
+                        console.log("nice");
                         numberOfMatchingDie++;
-
                         if (numberOfMatchingDie === numberOfDie) {
-                            // Challenge succeeded
-                            challengeSuccess = true;
-                            gameStatus['challengeSuccess'] = true;
+                            // Challenge fail
+                            challengeSuccess = false;
                         }
                     }
                 }
@@ -186,21 +186,25 @@ module.exports = exports = {
 
         if (!challengeSuccess) {
             // Challenge failed
-            gameStatus['challengeSuccess'] = false;
-            loserId = gameStatus['players'][userId];
+            loserId = userId;
         } else {
             // If the challenge succeeded, the loser is the user_id of the last wager
-            loserId = lastWager[userId];
+            loserId = lastWager['userId'];
         }
+console.log("loser is " + gameStatus['players'][loserId]["name"]);
 
         // Reduce dice for the loser
         gameStatus['players'][loserId]['numberOfDie']--;
 
         // If they have 0 dice, time to kick them out of the game!
         if (gameStatus['players'][loserId]['numberOfDie'] === 0) {
+            gameStatus['currentPlayer'] = gameStatus['playersInOrder'][(gameStatus['players'][loserId]['order'] + 1) % gameStatus['playersInOrder'].length];
+
             let loserIndex = gameStatus['playersInOrder'].indexOf(loserId);
             gameStatus['playersInOrder'].splice(loserIndex, 1);
             delete gameStatus['players'][loserId]; // muahahhaha
+        } else {
+            gameStatus['currentPlayer'] = loserId;
         }
 
         // Reset everything
@@ -208,27 +212,12 @@ module.exports = exports = {
 
         let numberOfPlayers = Object.keys(gameStatus['players']).length;
 
-        // Will also just create a new order for people to go in!
-        // Since we may have got rid of someone, and yolo y'know?
-        let randArray = createRandomArray(numberOfPlayers);
-
         // Re roll the dice
         for (playerId in gameStatus['players']) {
             if (gameStatus['players'].hasOwnProperty(playerId)) {
                 let numDie = gameStatus['players'][playerId]['numberOfDie'];
                 gameStatus['players'][playerId]['diceRolls'] = generateDiceRolls(numDie);
-                assignedOrder = randArray['order'];
-                gameStatus['players'][playerId]['order'] = assignedOrder;
-                order++;
-                if (assignedOrder === 1) {
-                    gameStatus['currentPlayer'] = playerId;
-                }
             }
-        }
-
-        // If the person just lost, then we set them as the currentPlayer
-        if (challengeSuccess && gameStatus['players'][userId]) {
-            gameStatus['currentPlayer'] = gameStatus['players'][userId];
         }
     }
 };
