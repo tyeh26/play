@@ -26,7 +26,10 @@ export default class LiarsDiceView extends React.Component {
             wagerNumberOfDie: 1,
             wagerFace: null,
             openBadWagerDialog: false,
+            openEndRoundDiaglog: false,
+            endRoundMessage: "",
         }
+
     }
 
     componentDidMount() {
@@ -71,9 +74,15 @@ export default class LiarsDiceView extends React.Component {
             let currentPlayerOrder = j.players[j.currentPlayer].order;
             let nextPlayers = playerOrder.slice(currentPlayerOrder).concat(playerOrder.slice(0, currentPlayerOrder));
             this.setState({nextPlayers: nextPlayers});
-
-            //this.setState({wagerNumberOfDie: j.wagers.length < 1 ? 1 : j.wagers[j.wagers.length - 1].numberOfDie});
-            //this.setState({wagerFace: j.wagers.length < 1 ? 1 : j.wagers[j.wagers.length - 1].face});
+            if (j.roundStatus && new Date(new Date(j.roundStatus.roundEndAt).getTime() + 5000) > new Date()) {
+                if (!this.state.openEndRoundDiaglog) {
+                    let message = j.players[j.roundStatus.loserId].name + " sucks";
+                    this.setState({endRoundMessage: message});
+                    this.setState({openEndRoundDiaglog: true});
+                }
+            } else {
+                this.setState({openEndRoundDiaglog: false});
+            }
         })
     }
 
@@ -177,6 +186,12 @@ export default class LiarsDiceView extends React.Component {
                     modal={true}
                     open={this.state.openBadWagerDialog}>
                         You can't wager that!
+                </Dialog>
+                <Dialog
+                    title="The End is Near(er)"
+                    modal = {true}
+                    open={this.state.openEndRoundDiaglog}>
+                        {this.state.endRoundMessage}
                 </Dialog>
             </div>
         );
