@@ -163,7 +163,7 @@ module.exports = exports = {
         let numberOfDie = lastWager['numberOfDie'];
         let faceNumber = lastWager['face'];
         let numberOfMatchingDie = 0;
-        let diceRolls, playerId, roll, loserId, rollIndex;
+        let diceRolls, playerId, roll, loserId, rollIndex, winnerId;
         let challengeSuccess = true;
 
         for (playerId in gameStatus['players']) {
@@ -185,9 +185,20 @@ module.exports = exports = {
         if (!challengeSuccess) {
             // Challenge failed
             loserId = userId;
+            winnerId = lastWager['userId'];
         } else {
             // If the challenge succeeded, the loser is the user_id of the last wager
             loserId = lastWager['userId'];
+            winnerId = userId;
+        }
+
+        gameStatus['roundStatus'] = {
+            winnerId,
+            loserId,
+            numberOfMatchingDie,
+            numberOfDie,
+            faceNumber,
+            roundEndAt: new Date()
         }
 
         // Reduce dice for the loser
